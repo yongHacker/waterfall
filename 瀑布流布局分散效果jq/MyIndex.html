@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script type="text/javascript" src="js/jquery-2.1.4.min.js"/></script>
+<title>带有分散效果的瀑布流</title>
+<style type="text/css">
+    *{padding: 0;margin:0;}
+    #main{
+        position: relative;
+    }
+    .pin{
+        padding: 15px 0 0 15px;
+        float:left;
+    }
+    .box{
+        padding: 10px;
+        border:1px solid #ccc;
+        box-shadow: 0 0 6px #ccc;
+        border-radius: 5px;
+    }
+    .box img{
+        width:162px;
+        height:auto;
+    }
+</style>
+<script>
+$( window ).on( "load", function(){
+   // 调用waterfall函数
+   waterfall();
+    var dataInt={'data':[{'src':'1.jpg'},{'src':'2.jpg'},{'src':'3.jpg'},{'src':'4.jpg'}]};
+    window.onscroll=function(){
+       // 拖动滚动条时
+       if(checkscrollside()){
+
+       }
+     }
+});
+
+
+function waterfall(){//照片初始位置
+ // 计算及定位数据块显示分散效果
+    var a=[];
+    var pin=$("#main").find('.pin');
+    var pinW=pin.eq(0).outerWidth();
+    var clientW=$(window).width();
+    var cols=Math.floor(clientW/pinW);
+
+    var clientHH=$(window).height()/2;
+    //摆放初始位置
+    pin.each(function(index, value) {
+        if(index<cols){
+            a.push(pin.eq(index).outerWidth());
+        }
+        pin.eq(index).css({
+            top:clientHH,
+            left:'50%',
+            'margin-top':-(pin.height()/2)+((Math.floor(Math.random()*10<5?-1:1)*Math.floor(Math.random()*200))),
+            'margin-left':-(pin.width()/2)+((Math.floor(Math.random()*10<5?-1:1)*Math.floor(Math.random()*200)))
+        });      
+    })
+    animateWater(pin,0,pinW);
+}
+
+function animateWater(pin,minHIndex,pinW){
+    var minH=Math.min.apply(null,a);
+    var minHIndex=$.inArray(minH,a);
+    pin.eq(minHIndex).animate({
+        left: minHIndex*pinW,
+        top: a[minHIndex],
+        'margin':0
+    },
+        300, function() {
+        a[minHIndex]+=pin.eq[minHIndex].outerHeight();
+        minHIndex++;
+         animateWater(pin,minHIndex,pinW);
+    });
+}
+
+
+function checkscrollside(){
+  // 检测是否具备了加载数据块的条件
+}
+
+</script> 
+
+
+
+<!-- <script type="text/javascript">
+$( window ).on( "load", function(){
+waterfall();
+var dataimg={"data":[{"src":"http://pic17.nipic.com/20111025/6957597_163322054332_2.jpg"},
+                    {"src":"http://pica.nipic.com/2007-12-03/2007123141415713_2.jpg"},
+{"src":"http://pic4.nipic.com/20090823/3193830_121855091_2.jpg"},
+{"src":"http://pic.nipic.com/2008-01-16/200811683222770_2.jpg"},
+{"src":"http://pic9.nipic.com/20100904/5041436_154436449375_2.jpg"},
+{"src":"http://pic1.nipic.com/2008-12-09/200812912540990_2.jpg"},
+{"src":"http://pic19.nipic.com/20120315/4758005_091854125000_2.jpg"},
+{"src":"http://pic1a.nipic.com/2008-10-27/200810279545868_2.jpg"},
+{"src":"http://pic3.nipic.com/20090525/2416945_231841034_2.jpg"},
+{"src":"http://pica.nipic.com/2007-12-03/2007123152823533_2.jpg"}
+]}
+$(window).on('scroll',function(){
+if(scrollcheck()){
+$.each(dataimg.data,function(index,value){
+var obox=$('<div>').addClass('box').appendTo($("#main"));
+var opic=$("<div>").addClass("pic").appendTo($(obox));
+$("<img>").attr("src",dataimg.data[index].src).appendTo(opic)
+})
+} 
+waterfallload();
+})
+})
+
+
+var myarr=[];
+function waterfall(){
+ // 计算及定位数据块显示分散效果
+  var $boxs=$("#main").find(".box");
+  var boxW=$boxs.eq(0).outerWidth();
+  var clientW=$(window).width();
+  var clos=Math.floor(clientW/boxW);
+  var clientH=$(window).height()/2;
+
+
+
+ $boxs.each(function(index,value){
+if(index<clos){
+     myarr.push(0);
+}
+var random2=Math.floor(Math.random()*100);//随机在0-200之间取整，随机偏移量
+var xx=myrandom()
+$boxs.eq(index).css({//设置图片位置
+top:clientH/2+'px',
+left:'50%',
+'margin-top':-(($boxs.height()/2)+(xx*random2)),//负号能使图片黏在一起
+'margin-left':-(($boxs.width())+(xx*random2))   //正号会把图片分很开
+})
+
+})
+animatefall($boxs,0,boxW);
+}
+ function animatefall(abc,n,www){
+var minH=Math.min.apply(null,myarr);
+  var inde=$.inArray(minH,myarr);
+  
+  abc.eq(n).animate({
+left:inde*www,
+'margin':0,
+top:myarr[inde]
+},500,function(){
+myarr[inde]+=abc.eq(n).outerHeight();
+n++;
+animatefall(abc,n,www)
+})
+}
+
+//使全部图片位置平均分为正负2边
+function myrandom(){
+var x=Math.floor(Math.random()*10);
+if(x<5){
+x=-1;
+  }else{
+ 
+ x=1;
+  }
+  return x
+}
+function scrollcheck(){
+var $lastbox=$('.box').last();
+var boxtop=$lastbox.offset().top;
+var boxH=Math.floor($lastbox.outerHeight()/2);
+var H=boxtop+boxH;
+var scrolltop=$(window).scrollTop();
+var clientH=$(window).height();
+if(H<scrolltop+clientH){
+return true
+}else{
+return false
+}
+}
+function waterfallload(){
+ // 计算及定位数据块显示分散效果
+ var $boxs=$(".box");
+ var boxW=$boxs.eq(0).outerWidth();
+ console.log(boxW)
+ var clientW=$(window).width();
+  
+ var cols=Math.floor(clientW/boxW);
+ $("#main").width(boxW*cols).css("margin","0 auto");
+ var arr=new Array();
+ $boxs.each(function(index,value){
+     if(index<cols){
+         arr[index]=$boxs.eq(index).outerHeight();
+     }else{
+         var minH=Math.min.apply(null,arr);
+         var minHIndex=$.inArray(minH,arr);
+         var boxleft=minHIndex*boxW;
+var boxtop=arr[minHIndex];
+$(value).css({'position':'absolute','left':boxleft,'top':boxtop})
+         arr[minHIndex]+=$boxs.eq(index).outerHeight();
+     }
+ })
+}
+</script> -->
+</head>
+<body>
+<div id="main">
+    <div class="pin">
+        <div class="box">
+            <img src="./images/1.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/2.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/3.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/4.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/5.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/6.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/7.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/8.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/9.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/10.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/11.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/12.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/13.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/14.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/15.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/16.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/17.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/18.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/19.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/20.jpg"/>
+        </div>
+    </div>
+    <div class="pin">
+        <div class="box">
+            <img src="./images/21.jpg"/>
+        </div>
+    </div>
+</div>
+</body>
+</html>
